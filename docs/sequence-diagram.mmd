@@ -1,0 +1,30 @@
+sequenceDiagram
+    actor User
+
+    participant Library
+    participant Librarian
+    participant Book
+
+    activate User
+    User ->> Library: getBooks
+    activate Library
+    Library -->> User: List<Book>
+    User ->> Library: requestBorrow
+    Library ->> Librarian: processBorrowRequest
+    activate Librarian
+    Librarian ->> Book: getAvailability
+    activate Book
+    critical book availability check
+    option isAvailable is true
+        Book -->> Librarian: true
+        Librarian ->> Book: setReservedBy
+    option isAvailable is false
+        Book -->> Librarian: false
+        Librarian ->> Book: addToWaitlist
+    end
+    deactivate Book
+    Librarian -->> Library: true/false
+    deactivate Librarian
+    Library -->> User: true/false
+    deactivate Library
+    deactivate User

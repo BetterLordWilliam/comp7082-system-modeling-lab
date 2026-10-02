@@ -1,15 +1,45 @@
 classDiagram
+    User "1" --> "1" Library : submits request to
+    Library "1" o-- "*" Book : has
+    Library "1" *-- "1" Librarian : employs
+    Librarian "1" --> "*" Book : manages
+    Book "1" --> "1" User : reserved by
+    Book "1" --> "*" User : waitlisted by
+
     class Book{
-        +String title
-        +String author
-        +String isbn
-        +boolean isAvailable
-        +User borrowedBy
-        +List<User> reservationList
+        -String _title
+        -String _author
+        -String _isbn
+        -boolean _isAvailable
+        -User _reservedBy
+        -List<User> _waitlist
+        +getTitle(): String
+        +getAuthor(): String
+        +getIsbn(): String
+        +getAvailability(): boolean
+        +getReservedBy(): User
+        +getWaitlist(): List<User>
+        +setReservedBy(user: User): void
+        +addToWaitlist(user: User): void
+        +removeFromWaitlist(user: User): void
     }
     class User{
+        -String _name
+        +getName(): String
     }
     class Library{
+        -List<Book> _books
+        -Librarian _librarian
+        +getBooks(): List<Book>
+        +requestReservation(book: Book, user: User): boolean
+        +requestReturn(book: Book, user: User): boolean
     }
     class Librarian{
+        -String _name
+        -Library _library
+        +getName(): String
+        +getReservedBooks(user: User): List<Book>
+        +getWaitlistedBooks(user: User): List<Book>
+        +processReservationRequest(book: Book, user: User): boolean
+        +processReturnRequest(book: Book, user: User): boolean
     }
