@@ -7,19 +7,22 @@ stateDiagram
     Available --> Borrowed : Borrow Request [isAvailable == true]
 
     %% Add first user to waitlist queue
-    Borrowed --> Waitlisted : Borrow Request [isAvailable == false]
+    Available --> Waitlisted : Borrow [isAvailable == false]
 
-    %% Add subsequent user to waitlist queue
-    Waitlisted --> Waitlisted : Borrow Request [isAvailable == false]
+    %% Borrow request made, but book is already borrowed, add (or allocate) user to waitlist queue
+    Borrowed --> Waitlisted : Borrow [isAvailable == false]
+
+    %% Borrow request made, but book is already borrowed & there exists a waitlist queue already, so append to that
+    Waitlisted --> Waitlisted : Borrow [isAvailable == false]
 
     %% Make the book available for borrowing
-    Borrowed --> Available : Return Book [waitList.isEmpty() == true]
+    Borrowed --> Available : Return [waitList.isEmpty() == true]
 
     %% Give the book to the next user in the waitlist queue
-    Borrowed --> Borrowed : Return Book [waitList.isEmpty() == false]
+    Borrowed --> Borrowed : Return [waitList.isEmpty() == false]
 
     %% Remove from waitlisted after last user in queue leaves
-    Waitlisted --> Borrowed : Return Book [waitList.size() == 1]
+    Waitlisted --> Borrowed : Return [waitList.size() == 1]
 
     %% Remove the first user in the waitlist queue
-    Waitlisted --> Waitlisted : Return Book [waitList.size() > 0]
+    Waitlisted --> Waitlisted : Return [waitList.size() > 0]
