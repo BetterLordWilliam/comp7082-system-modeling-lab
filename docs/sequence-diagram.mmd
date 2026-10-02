@@ -1,3 +1,6 @@
+---
+title: Request Borrow and Return Sequence Diagram
+---
 sequenceDiagram
     actor User
 
@@ -26,5 +29,19 @@ sequenceDiagram
     Librarian -->> Library: true/false
     deactivate Librarian
     Library -->> User: true/false
+    deactivate Library
+    deactivate User
+
+    activate User
+    User ->> Library: getBooks
+    activate Library
+    Library -->> User: List<Book>
+    User ->> Library: requestReturn
+    Library ->> Librarian: processReturnRequest
+    activate Librarian
+    activate Book
+    Librarian ->> Book: setReservedBy(null)
+    deactivate Book
+    deactivate Librarian
     deactivate Library
     deactivate User

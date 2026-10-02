@@ -1,1 +1,25 @@
-class
+---
+title: Book State Diagram
+---
+stateDiagram
+    [*] --> Available
+
+    Available --> Borrowed : Borrow Request [isAvailable == true]
+
+    %% Add first user to waitlist queue
+    Borrowed --> Waitlisted : Borrow Request [isAvailable == false]
+
+    %% Add subsequent user to waitlist queue
+    Waitlisted --> Waitlisted : Borrow Request [isAvailable == false]
+
+    %% Make the book available for borrowing
+    Borrowed --> Available : Return Book [waitList.isEmpty() == true]
+
+    %% Give the book to the next user in the waitlist queue
+    Borrowed --> Borrowed : Return Book [waitList.isEmpty() == false]
+
+    %% Remove from waitlisted after last user in queue leaves
+    Waitlisted --> Borrowed : Return Book [waitList.size() == 1]
+
+    %% Remove the first user in the waitlist queue
+    Waitlisted --> Waitlisted : Return Book [waitList.size() > 0]
