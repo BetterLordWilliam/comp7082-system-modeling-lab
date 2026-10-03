@@ -2,46 +2,128 @@
 title: Request Borrow and Return Sequence Diagram
 ---
 sequenceDiagram
-    actor User
+    actor Alice
+    actor Bob
+    actor Charlie
 
     participant Library
     participant Librarian
     participant Book
 
-    activate User
-    User ->> Library: getBooks
-    activate Library
-    Library -->> User: List<Book>
-    User ->> Library: requestBorrow
-    Library ->> Librarian: processBorrowRequest
-    activate Librarian
-    Librarian ->> Book: getAvailability
-    activate Book
-    critical book availability check
-    option isAvailable is true
-        Book -->> Librarian: true
-        Librarian ->> Book: setReservedBy
-    option isAvailable is false
-        Book -->> Librarian: false
-        Librarian ->> Book: addToWaitlist
-    end
-    deactivate Book
-    Librarian -->> Library: true/false
-    deactivate Librarian
-    Library -->> User: true/false
-    deactivate Library
-    deactivate User
+    %% activate User
+    %% User ->> Library: getBooks
+    %% activate Library
+    %% Library -->> User: List<Book>
+    %% User ->> Library: requestBorrow
+    %% Library ->> Librarian: processBorrowRequest
+    %% activate Librarian
+    %% Librarian ->> Book: getAvailability
+    %% activate Book
+    %% critical book availability check
+    %% option isAvailable is true
+    %%     Book -->> Librarian: true
+    %%     Librarian ->> Book: setReservedBy
+    %% option isAvailable is false
+    %%     Book -->> Librarian: false
+    %%     Librarian ->> Book: addToWaitlist
+    %% end
+    %% deactivate Book
+    %% Librarian -->> Library: true/false
+    %% deactivate Librarian
+    %% Library -->> User: true/false
+    %% deactivate Library
+    %% deactivate User
 
-    activate User
-    User ->> Library: getBooks
+    %% activate User
+    %% User ->> Library: getBooks
+    %% activate Library
+    %% Library -->> User: List<Book>
+    %% User ->> Library: requestReturn
+    %% Library ->> Librarian: processReturnRequest
+    %% activate Librarian
+    %% activate Book
+    %% Librarian ->> Book: setReservedBy(null)
+    %% deactivate Book
+    %% deactivate Librarian
+    %% deactivate Library
+    %% deactivate User
+
+    activate Alice
+    Alice ->> Library: Alice borrows 1984
     activate Library
-    Library -->> User: List<Book>
-    User ->> Library: requestReturn
-    Library ->> Librarian: processReturnRequest
-    activate Librarian
+    Library ->> Book: Alice borrows 1984
     activate Book
-    Librarian ->> Book: setReservedBy(null)
+    Book ->> Book: is_available = true
+    Book ->> Book: _current_borrower = Alice
+    Book ->> Book: set is_available = false
+    Book -->>Library: Alice borrowed 1984
     deactivate Book
+    Library -->> Alice: Alice borrowed 1984
+    deactivate Library
+    deactivate Alice
+
+    activate Bob
+    Bob ->> Library: Bob borrows 1984
+    activate Library
+    Library ->> Book: Bob borrows 1984
+    activate Book
+    Book ->> Book: is_available = false
+    Book ->> Book: _waitlist.append(Bob)
+    Note right of Book: _waitlist = [Bob]
+    Book -->>Library: Bob waitlisted for 1984
+    deactivate Book
+    Library -->> Bob: Bob waitlisted for 1984
+    deactivate Library
+    deactivate Bob
+
+    activate Charlie
+    Charlie ->> Library: Charlie borrows 1984
+    activate Library
+    Library ->> Book: Charlie borrows 1984
+    activate Book
+    Book ->> Book: is_available = false
+    Book ->> Book: _waitlist.append(Charlie)
+    Note right of Book: _waitlist = [Bob, Charlie]
+    Book -->>Library: Charlie waitlisted for 1984
+    deactivate Book
+    Library -->> Charlie: Charlie waitlisted for 1984
+    deactivate Library
+    deactivate Charlie
+
+    activate Alice
+    Alice ->> Library: Alice returns 1984
+    activate Library
+    Library ->> Librarian: Process Return 1984
+    activate Librarian
+    Librarian ->> Book: Alice returns 1984
+    activate Book
+    Book ->> Book: _current_borrower = None
+    Book ->> Book: _is_available = True
+    Book -->> Librarian: Alice returned 1984
+    deactivate Book
+    Librarian -->> Library: Alice returned 1984
+    Library -->> Alice: Alice returned 1984
+    deactivate Alice
+
+    Librarian ->> Book: get_waitlist().count
+    activate Book
+    Note right of Book: _waitlist = [Bob, Charlie]
+    Book -->> Librarian: count > 0
+
+    Librarian ->> Book: Dequeue waitlist
+    Book ->> Book: _waitlist.dequeue()
+    Book -->> Librarian: Bob
+
+    Librarian ->> Book: Bob borrows 1984
+    Book ->> Book: _current_borrower = Bob
+    Book ->> Book: _is_available = False
+    Note right of Book: _waitlist = [Charlie]
+    Book -->> Librarian: Bob borrowed 1984
+    deactivate Book
+
+    Librarian ->> Bob: Bob borrowed 1984
+    activate Bob
+    deactivate Bob
+
     deactivate Librarian
     deactivate Library
-    deactivate User
