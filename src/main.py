@@ -127,10 +127,10 @@ class Librarian:
 
 
 class Library:
-    def __init__(self):
+    def __init__(self, librarian: Librarian):
         self.books: list[Book] = []
         self.users: list[User] = []
-        self.librarian: Librarian = Librarian()
+        self.librarian: Librarian = librarian
 
     def add_book(self, book: Book) -> None:
         try:
@@ -169,7 +169,7 @@ def main():
         Book("Moby Dick", "Herman Melville", "1324"),
     ]
     
-    library = Library()
+    library = Library(Librarian())
     for user in users:
         library.add_user(user)
     for book in books:

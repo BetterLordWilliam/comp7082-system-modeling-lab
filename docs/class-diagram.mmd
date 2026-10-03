@@ -10,39 +10,38 @@ classDiagram
     Book "1" --> "0..*" User : waitlisted by
 
     class Book{
-        -String _title
-        -String _author
-        -String _isbn
-        -boolean _isAvailable
-        -User _reservedBy
+        +str title
+        +str author
+        +str isbn
+        -bool _is_available
+        -User _current_borrower
         -List<User> _waitlist
-        +getTitle(): String
-        +getAuthor(): String
-        +getIsbn(): String
-        +getAvailability(): boolean
-        +getReservedBy(): User
-        +getWaitlist(): List<User>
-        +setReservedBy(user: User): void
-        +addToWaitlist(user: User): void
-        +removeFromWaitlist(user: User): void
+        +get_availability(): bool
+        +get_current_borrower(): User
+        +get_waitlist(): List<User>
+        +borrow(user: User): void
+        +return_book(user: User): void
+        +add_to_waitlist(user: User): void
+        +remove_from_waitlist(user: User): void
     }
     class User{
-        -String _name
-        +getName(): String
-    }
-    class Library{
-        -List<Book> _books
-        -Librarian _librarian
-        +getBooks(): List<Book>
-        +requestReservation(book: Book, user: User): boolean
-        +requestReturn(book: Book, user: User): boolean
+        +str name
+        +List<Book> borrowed_books
+        +borrow_book(library: Library, title: str): void
+        +return_book(library: Library, title: str): void
+        +add_borrowed_book(book: Book): void
+        +removed_borrowed_book(book: Book): void
     }
     class Librarian{
-        -String _name
-        -Library _library
-        +getName(): String
-        +getReservedBooks(user: User): List<Book>
-        +getWaitlistedBooks(user: User): List<Book>
-        +processReservationRequest(book: Book, user: User): boolean
-        +processReturnRequest(book: Book, user: User): boolean
+        +manage_return(book: Book, user: User): void
+        +manage_waitlist(book: Book, user: User): void
+    }
+    class Library{
+        +List<Book> books
+        +List<User> users
+        +Librarian librarian
+        +add_user(user: User): void
+        +add_book(book: Book): void
+        +borrow_book(book: Book, user: User): void
+        +return_book(book: Book, user: User): void
     }
