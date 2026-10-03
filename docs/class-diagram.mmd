@@ -6,8 +6,8 @@ classDiagram
     Library "1" o-- "*" Book : has
     Library "1" *-- "1" Librarian : employs
     Librarian "1" --> "*" Book : manages
-    Book "1" --> "1" User : reserved by
-    Book "1" --> "*" User : waitlisted by
+    Book "1" --> "0..1" User : reserved by
+    Book "1" --> "0..*" User : waitlisted by
 
     class Book{
         -String _title
